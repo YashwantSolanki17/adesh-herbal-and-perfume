@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './index.css'
 import Products from './Products.jsx'
+import Cart from './Cart.jsx'
 
 const products = [
   { id: 1, emoji: '🌿', name: 'Giloy Ark',        sub: '500ml · Immunity Booster',    price: 199, badge: 'Bestseller' },
@@ -58,9 +59,9 @@ function Navbar({ cartCount, page, setPage }) {
         </li>
       </ul>
 
-      <button style={styles.cartBtn}>
-        🛒 Cart <span style={styles.cartBadge}>{cartCount}</span>
-      </button>
+      <button style={styles.cartBtn} onClick={() => setPage('cart')}>
+  🛒 Cart <span style={styles.cartBadge}>{cartCount}</span>
+    </button>
     </nav>
   )
 }
@@ -177,10 +178,9 @@ export default function App() {
   return (
     <div>
       <Navbar cartCount={cart.length} page={page} setPage={setPage} />
-      {page === 'home'
-        ? <Home setPage={setPage} cart={cart} setCart={setCart} />
-        : <Products cart={cart} setCart={setCart} />
-      }
+      {page === 'home' && <Home setPage={setPage} cart={cart} setCart={setCart} />}
+      {page === 'products' && <Products cart={cart} setCart={setCart} />}
+      {page === 'cart' && <Cart cart={cart} setCart={setCart} setPage={setPage} />}
     </div>
   )
 }
