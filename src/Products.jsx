@@ -1,169 +1,106 @@
 import React, { useState } from 'react'
+import { allProducts, ProductCard } from './App.jsx'
 
-const allProducts = [
-  { id: 1,  emoji: '🌿', name: 'Giloy Ark',          sub: '500ml · Immunity Booster',   price: 199, category: 'Ark',         badge: 'Bestseller' },
-  { id: 2,  emoji: '🍯', name: 'Wild Forest Honey',   sub: '250g · Raw & Unfiltered',    price: 349, category: 'Honey',       badge: 'Hot' },
-  { id: 3,  emoji: '💊', name: 'Safed Musli Tabs',    sub: '60 tabs · Vitality',         price: 449, category: 'Tablets',     badge: '' },
-  { id: 4,  emoji: '🧴', name: 'Neem Tulsi Soap',     sub: '100g · Antibacterial',       price: 89,  category: 'Soap',        badge: 'New' },
-  { id: 5,  emoji: '🫚', name: 'Bhringraj Oil',       sub: '200ml · Hair Growth',        price: 279, category: 'Oil',         badge: '' },
-  { id: 6,  emoji: '🌸', name: 'Rose Face Wash',      sub: '100ml · Glowing Skin',       price: 149, category: 'Face Wash',   badge: 'New' },
-  { id: 7,  emoji: '🌱', name: 'Ashwagandha Ark',     sub: '500ml · Stress Relief',      price: 229, category: 'Ark',         badge: '' },
-  { id: 8,  emoji: '🍋', name: 'Neem Honey',          sub: '250g · Skin & Immunity',     price: 299, category: 'Honey',       badge: '' },
-  { id: 9,  emoji: '🌹', name: 'Rose Ittar',          sub: '10ml · Pure & Long Lasting', price: 499, category: 'Ittar',       badge: 'Bestseller' },
-  { id: 10, emoji: '🧘', name: 'Shatavari Tablets',   sub: '60 tabs · Women Wellness',   price: 399, category: 'Tablets',     badge: 'Popular' },
-  { id: 11, emoji: '🌻', name: 'Sesame Oil',          sub: '200ml · Joint Pain Relief',  price: 249, category: 'Oil',         badge: '' },
-  { id: 12, emoji: '🫧', name: 'Aloe Vera Face Wash', sub: '100ml · Oil Control',        price: 129, category: 'Face Wash',   badge: 'Popular' },
-  { id: 13, emoji: '🌺', name: 'Mogra Ittar',         sub: '10ml · Floral & Fresh',      price: 449, category: 'Ittar',       badge: '' },
-  { id: 14, emoji: '✨', name: 'Oud Perfume',          sub: '50ml · Premium Fragrance',   price: 799, category: 'Perfume',     badge: 'Hot' },
-  { id: 15, emoji: '💐', name: 'Floral Perfume',      sub: '50ml · Light & Refreshing',  price: 599, category: 'Perfume',     badge: 'New' },
-  { id: 16, emoji: '🪔', name: 'Sandalwood Dhoop',    sub: '20 sticks · Pure Fragrance', price: 99,  category: 'Dhoop',       badge: '' },
-  { id: 17, emoji: '🌙', name: 'Guggal Dhoop',        sub: '20 sticks · Vastu & Pooja',  price: 89,  category: 'Dhoop',       badge: 'Popular' },
-  { id: 18, emoji: '🕯️', name: 'Rose Aggarbatti',     sub: '20 sticks · Daily Pooja',    price: 49,  category: 'Aggarbatti',  badge: '' },
-  { id: 19, emoji: '🌿', name: 'Chandan Aggarbatti',  sub: '20 sticks · Meditation',     price: 59,  category: 'Aggarbatti',  badge: 'Bestseller' },
-  { id: 20, emoji: '🧴', name: 'Turmeric Face Wash',  sub: '100ml · Brightening',        price: 159, category: 'Face Wash',   badge: '' },
-]
+// ── Products Page ────────────────────────────────────────────
+// This is the "All Products" page: search bar + category chips + grid.
+// (It reuses `allProducts` and `ProductCard` from App.jsx instead of
+// redefining them, so there's only ONE source of truth for products.)
+export default function Products({ cart = [], setCart, setPage, setSelectedProduct }) {
+  const [search, setSearch]     = useState('')
+  const [category, setCategory] = useState('All')
 
-const categories = ['All', 'Ark', 'Honey', 'Soap', 'Oil', 'Tablets', 'Face Wash', 'Ittar', 'Perfume', 'Dhoop', 'Aggarbatti']
+  function addToCart(p) { setCart(prev => [...prev, p]) }
 
-function ProductCard({ product, onAdd }) {
-  return (
-    <div style={s.card}>
-      <div style={s.cardImg}>
-        {product.badge && (
-          <span style={{
-            ...s.badge,
-            background: product.badge === 'Hot' ? '#FAC775' :
-                        product.badge === 'New' ? '#B5D4F4' : '#C0DD97',
-            color:      product.badge === 'Hot' ? '#412402' :
-                        product.badge === 'New' ? '#0C447C' : '#27500A',
-          }}>
-            {product.badge}
-          </span>
-        )}
-        <span style={{ fontSize: 52 }}>{product.emoji}</span>
-      </div>
-      <div style={s.cardBody}>
-        <div style={s.cardName}>{product.name}</div>
-        <div style={s.cardSub}>{product.sub}</div>
-        <div style={s.cardFooter}>
-          <span style={s.price}>₹{product.price}</span>
-          <button style={s.addBtn} onClick={() => onAdd(product)}>
-            + Add
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default function Products({ cart, setCart }) {
-  const [search, setSearch] = useState('')
-  const [activeCategory, setActiveCategory] = useState('All')
-  const [sortBy, setSortBy] = useState('default')
-
-  function addToCart(product) {
-    setCart(prev => [...prev, product])
-    alert(`✅ ${product.name} added to cart!`)
+  // Removes ONE instance of this product id from the cart
+  function removeFromCart(id) {
+    setCart(prev => {
+      const idx = prev.findIndex(item => item.id === id)
+      if (idx === -1) return prev
+      const next = [...prev]
+      next.splice(idx, 1)
+      return next
+    })
   }
 
-  let filtered = allProducts
+  function countOf(id)    { return cart.filter(item => item.id === id).length }
+  function viewProduct(p) { setSelectedProduct(p); setPage('detail') }
 
-  if (activeCategory !== 'All') {
-    filtered = filtered.filter(p => p.category === activeCategory)
-  }
+  // Build category chip list dynamically from the product data
+  const categories = ['All', ...new Set(allProducts.map(p => p.category))]
 
-  if (search.trim() !== '') {
-    filtered = filtered.filter(p =>
-      p.name.toLowerCase().includes(search.toLowerCase())
-    )
-  }
-
-  if (sortBy === 'low') {
-    filtered = [...filtered].sort((a, b) => a.price - b.price)
-  } else if (sortBy === 'high') {
-    filtered = [...filtered].sort((a, b) => b.price - a.price)
-  }
+  // Filter by search text + selected category
+  const filtered = allProducts.filter(p => {
+    const matchesSearch   = p.name.toLowerCase().includes(search.toLowerCase())
+    const matchesCategory = category === 'All' || p.category === category
+    return matchesSearch && matchesCategory
+  })
 
   return (
-    <div style={s.page}>
-
-      <div style={s.header}>
-        <h1 style={s.title}>Our Products</h1>
-        <p style={s.subtitle}>{filtered.length} products found</p>
-      </div>
-
+    <div>
+      {/* Search Toolbar */}
       <div style={s.toolbar}>
         <input
-          style={s.searchInput}
           type="text"
-          placeholder="🔍  Search products..."
+          placeholder="🔍 Search products..."
           value={search}
           onChange={e => setSearch(e.target.value)}
+          style={s.searchInput}
         />
-        <select
-          style={s.sortSelect}
-          value={sortBy}
-          onChange={e => setSortBy(e.target.value)}
-        >
-          <option value="default">Sort: Default</option>
-          <option value="low">Price: Low to High</option>
-          <option value="high">Price: High to Low</option>
-        </select>
       </div>
 
-      <div style={s.categories}>
-        {categories.map(cat => (
+      {/* Category Chips */}
+      <div style={s.chipsRow}>
+        {categories.map(c => (
           <button
-            key={cat}
-            style={{
-              ...s.catChip,
-              background: activeCategory === cat ? '#3B6D11' : '#f0f7e6',
-              color:      activeCategory === cat ? '#EAF3DE' : '#3B6D11',
-              border:     activeCategory === cat ? '1.5px solid #3B6D11' : '1.5px solid #C0DD97',
-            }}
-            onClick={() => setActiveCategory(cat)}
+            key={c}
+            style={{ ...s.chip, ...(category === c ? s.chipActive : {}) }}
+            onClick={() => setCategory(c)}
           >
-            {cat}
+            {c}
           </button>
         ))}
       </div>
 
-      {filtered.length === 0 ? (
-        <div style={s.empty}>
-          <div style={{ fontSize: 48 }}>🌿</div>
-          <div>No products found for "{search}"</div>
-        </div>
-      ) : (
-        <div style={s.grid}>
-          {filtered.map(p => (
-            <ProductCard key={p.id} product={p} onAdd={addToCart} />
-          ))}
-        </div>
-      )}
+      {/* Result Count */}
+      <div style={s.resultCount}>
+        {filtered.length} product{filtered.length !== 1 ? 's' : ''} found
+      </div>
 
+      {/* Product Grid */}
+      <div style={s.gridWrap}>
+        {filtered.length > 0 ? (
+          <div style={s.grid}>
+            {filtered.map(p => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                count={countOf(p.id)}
+                onAdd={() => addToCart(p)}
+                onRemove={() => removeFromCart(p.id)}
+                onView={() => viewProduct(p)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div style={s.empty}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
+            <p>No products match your search.</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
+// ── Styles ────────────────────────────────────────────────────
 const s = {
-  page:        { padding: '2rem', background: '#f8f9f4', minHeight: '100vh' },
-  header:      { marginBottom: '1.5rem' },
-  title:       { fontSize: 28, fontWeight: 700, color: '#173404' },
-  subtitle:    { fontSize: 14, color: '#888', marginTop: 4 },
-  toolbar:     { display: 'flex', gap: 12, marginBottom: '1.2rem', flexWrap: 'wrap' },
-  searchInput: { flex: 1, minWidth: 200, padding: '10px 16px', borderRadius: 8, border: '1.5px solid #C0DD97', fontSize: 14, background: '#fff', outline: 'none' },
-  sortSelect:  { padding: '10px 16px', borderRadius: 8, border: '1.5px solid #C0DD97', fontSize: 14, background: '#fff', color: '#333', outline: 'none' },
-  categories:  { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: '1.5rem' },
-  catChip:     { padding: '7px 18px', borderRadius: 20, fontSize: 13, fontWeight: 500, cursor: 'pointer' },
-  grid:        { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.2rem' },
-  card:        { background: '#fff', border: '1px solid #e8f0dc', borderRadius: 12, overflow: 'hidden' },
-  cardImg:     { height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#EAF3DE,#E1F5EE)', position: 'relative' },
-  badge:       { position: 'absolute', top: 8, left: 8, fontSize: 10, fontWeight: 600, borderRadius: 4, padding: '2px 8px' },
-  cardBody:    { padding: '12px 14px' },
-  cardName:    { fontSize: 14, fontWeight: 600, color: '#173404', marginBottom: 4 },
-  cardSub:     { fontSize: 12, color: '#888', marginBottom: 10 },
-  cardFooter:  { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  price:       { fontSize: 16, fontWeight: 700, color: '#3B6D11' },
-  addBtn:      { background: '#3B6D11', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 14px', fontSize: 13, cursor: 'pointer' },
-  empty:       { textAlign: 'center', padding: '4rem', color: '#888', fontSize: 16, lineHeight: 2 },
+  toolbar:     { padding: '1rem 2rem', background: '#fff', borderBottom: '1px solid #e8f0dc' },
+  searchInput: { width: '100%', maxWidth: 1200, margin: '0 auto', display: 'block', padding: '10px 16px', borderRadius: 8, border: '1px solid #e8f0dc', fontSize: 14, outline: 'none' },
+  chipsRow:    { display: 'flex', gap: 8, overflowX: 'auto', padding: '1rem 2rem', background: '#fff' },
+  chip:        { flexShrink: 0, background: '#f0f7e6', border: '1px solid #dcedc8', color: '#3B6D11', borderRadius: 20, padding: '6px 16px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' },
+  chipActive:  { background: '#3B6D11', color: '#EAF3DE', border: '1px solid #3B6D11' },
+  resultCount: { padding: '10px 2rem', fontSize: 13, color: '#888' },
+  gridWrap:    { padding: '0 2rem 2rem' },
+  grid:        { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: '1rem', maxWidth: 1200, margin: '0 auto' },
+  empty:       { textAlign: 'center', padding: '4rem 2rem', color: '#888' },
 }

@@ -1,21 +1,83 @@
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9f4;
   color: #1a1a1a;
+  -webkit-tap-highlight-color: transparent;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
+button, a {
   cursor: pointer;
   font-family: inherit;
+}
+
+/* Make sure every section fills full width */
+section, div, nav, footer {
+  max-width: 100%;
+}
+
+/* ─── MOBILE FIXES ─────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Hero - stack vertically, full width */
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Navbar inner - less padding */
+  div[style*="padding: 1rem 2rem"] {
+    padding: 0.8rem 1rem !important;
+  }
+
+  /* All sections - less padding */
+  div[style*="padding: 2rem"] {
+    padding: 1rem !important;
+  }
+
+  /* Products grid - ALWAYS 2 columns */
+  div[style*="repeat(auto-fill, minmax(200px"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Cart layout - stack vertically */
+  div[style*="grid-template-columns: 1fr 340px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Search toolbar wrap */
+  div[style*="padding: 1rem 2rem"][style*="background: #fff"] {
+    padding: 0.8rem 1rem !important;
+  }
+
+  /* Chips scroll */
+  div[style*="padding: 1rem 2rem"][style*="overflowX"] {
+    padding: 0.6rem 1rem !important;
+  }
+
+  /* Products result count */
+  div[style*="padding: 10px 2rem"] {
+    padding: 8px 1rem !important;
+  }
+
+  /* Products grid padding */
+  div[style*="padding: 0 2rem 2rem"] {
+    padding: 0 1rem 1rem !important;
+  }
+
+  /* Toolbar flex wrap */
+  div[style*="gap: 12px"][style*="flexWrap: wrap"] {
+    padding: 0.8rem 1rem !important;
+  }
 }

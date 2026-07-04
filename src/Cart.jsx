@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Cart({ cart, setCart, setPage }) {
+export default function Cart({ cart, setCart, setPage, onCheckout }) {
 
   // Remove one item from cart
   function removeItem(indexToRemove) {
@@ -126,7 +126,7 @@ export default function Cart({ cart, setCart, setPage }) {
             <span>₹{total >= 499 ? total : total + 49}</span>
           </div>
 
-          <button style={s.checkoutBtn}>
+          <button style={s.checkoutBtn} onClick={onCheckout}>
             Proceed to Checkout →
           </button>
 
